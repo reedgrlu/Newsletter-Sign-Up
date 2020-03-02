@@ -6,6 +6,8 @@ const https = require("https");
 
 const app = express();
 
+const keys = require(__dirname + "/keys.json");
+
 app.use(bodyParser.urlencoded({extended: true}));
 
 // use static files on express server by declaring the static folder
@@ -39,10 +41,16 @@ app.post("/", function(req,res){
 
   
 
-  const url = "https://us19.api.mailchimp.com/3.0/lists/a78b80efbd";
+  const url = "https://us19.api.mailchimp.com/3.0/lists/" + keys.listID;
+  const authentication = "anything:" + keys.api;
+
+  // console.log(authentication);
+  // console.log(url);
+  
+
   const options = {
     method: "POST",
-    auth: "reed:9baa7db17a6cfabdadfc29a40e279186-us19"
+    auth: authentication
   }
 
   const request = https.request(url, options, function(response){
@@ -50,6 +58,9 @@ app.post("/", function(req,res){
       res.sendFile(__dirname + "/success.html");
     }else{
       res.sendFile(__dirname + "/failure.html");
+      console.log(response.statusCode)
+      console.log(response.statusMessage)
+      
     }
     
     response.on("data", function(data){
@@ -75,8 +86,7 @@ app.post("/failure", function(req,res){
 
 
 app.listen(process.env.PORT || 3000, function() {
-  console.log("Server on 3000");
+  console.log("Server started");
+
 })
 
-// API Key: 9baa7db17a6cfabdadfc29a40e279186-us19
-// List ID: a78b80efbd
